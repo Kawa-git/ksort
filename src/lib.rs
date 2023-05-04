@@ -9,9 +9,7 @@ pub fn bubble_sort<T: Ord + Copy>(vec: Vec<T>) -> Vec<T> {
     for i in 0..vec.len() {
         for j in 0..vec.len() {
             if vec[i] <= vec[j] {
-                let (el1, el2) = swap(vec[i], vec[j]);
-                vec[i] = el1;
-                vec[j] = el2;
+                vec.swap(i, j);
             }
         }
     }
@@ -44,10 +42,6 @@ pub fn selection_sort<T: Ord + Copy>(vec: Vec<T>) -> Vec<T> {
         vec.remove(index);
     }
     return result;
-}
-#[inline]
-fn swap<T>(el1: T, el2: T) -> (T, T) {
-    return (el2, el1);
 }
 
 #[cfg(test)]
