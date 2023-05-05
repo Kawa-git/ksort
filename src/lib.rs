@@ -62,6 +62,49 @@ pub fn insertion_sort<T: Ord + Copy>(vec: Vec<T>) -> Option<Vec<T>> {
     return Some(vec);
 }
 
+/// please dont use this
+pub fn bogo_sort<T: Ord + Copy>(mut vec: Vec<T>) -> (Option<Vec<T>>, usize) {
+    // O(+inf)
+    if vec.len() < 1 {
+        return (None, 0);
+    }
+
+    if vec.len() > 9 {
+        return (bubble_sort(vec), u64::MAX as usize);
+    }
+
+    fn randomize<T>(mut vec: Vec<T>) -> Vec<T> {
+        use rand::Rng;
+        let mut rnd = rand::thread_rng();
+        for i in 0..vec.len() {
+            let random_numer = rnd.gen_range(0..(vec.len() as i32)) as usize;
+            if random_numer == i {
+                continue;
+            }
+            vec.swap(i, random_numer);
+        }
+        return vec;
+    }
+
+    let mut is_ok = true;
+    let mut steps = 0;
+    loop {
+        steps += 1;
+        for i in 0..vec.len() - 1 {
+            if vec[i] > vec[i + 1] {
+                is_ok = false;
+                break;
+            }
+        }
+        if !is_ok {
+            vec = randomize(vec);
+            is_ok = true;
+        } else {
+            return (Some(vec), steps);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -103,5 +146,20 @@ mod tests {
         let vec: Vec<i32> = Vec::new();
         let result = insertion_sort(vec);
         assert_eq!(result, None);
+    }
+
+    #[test]
+    fn bogo_sort_test() {
+        let (result, steps) = bogo_sort(vec![3, 4, 1, 5, 2, 6, 8, 7, 9, 10, 11]);
+        assert_eq!(steps, 1);
+        assert_eq!(result, Some(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]));
+    }
+
+    #[test]
+    fn bogo_sort_empty_vec() {
+        let vec: Vec<i32> = Vec::new();
+        let (result, steps) = bogo_sort(vec);
+        assert_eq!(result, None);
+        assert_eq!(steps, 0);
     }
 }
