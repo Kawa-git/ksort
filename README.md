@@ -7,4 +7,4 @@
 - [ ] Merge Sort
 - [ ] Heap Sort
 - [ ] Distribution Counting
-- [ ] Bogo Sort (pls no)
+- [x] Bogo Sort (pls no)
