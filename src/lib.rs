@@ -1,5 +1,5 @@
 pub fn bubble_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
-    // complexity O(n^2)
+    // complexity O(n^2), stable
 
     if vec.len() < 1 {
         return None;
@@ -16,7 +16,7 @@ pub fn bubble_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
 }
 
 pub fn selection_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
-    // non adaptive, O(n^2)
+    // O(n^2), non stable
 
     if vec.len() < 1 {
         return None;
@@ -43,7 +43,7 @@ pub fn selection_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
 }
 
 pub fn insertion_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
-    // O(n^2)
+    // O(n^2), stable
 
     if vec.len() < 1 {
         return None;
@@ -61,7 +61,7 @@ pub fn insertion_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
 
 /// please dont use this
 pub fn bogo_sort<T: Ord + Copy>(mut vec: Vec<T>) -> (Option<Vec<T>>, usize) {
-    // O(+inf)
+    // Ω(n)
     if vec.len() < 1 {
         return (None, 0);
     }
@@ -99,6 +99,7 @@ pub fn bogo_sort<T: Ord + Copy>(mut vec: Vec<T>) -> (Option<Vec<T>>, usize) {
 }
 
 pub fn merge_sort<T: Ord + Copy>(mut vec: Vec<T>, left: usize, right: usize) -> Option<Vec<T>> {
+    // θ(nlog(n)), stable
     if vec.len() < 1 {
         return None;
     }
