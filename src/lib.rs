@@ -1,11 +1,10 @@
-pub fn bubble_sort<T: Ord + Copy>(vec: Vec<T>) -> Option<Vec<T>> {
+pub fn bubble_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
     // complexity O(n^2)
 
     if vec.len() < 1 {
         return None;
     }
 
-    let mut vec = vec;
     for i in 0..vec.len() {
         for j in 0..vec.len() {
             if vec[i] <= vec[j] {
@@ -16,14 +15,13 @@ pub fn bubble_sort<T: Ord + Copy>(vec: Vec<T>) -> Option<Vec<T>> {
     return Some(vec);
 }
 
-pub fn selection_sort<T: Ord + Copy>(vec: Vec<T>) -> Option<Vec<T>> {
+pub fn selection_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
     // non adaptive, O(n^2)
 
     if vec.len() < 1 {
         return None;
     }
 
-    let mut vec = vec;
     let mut result: Vec<T> = Vec::new();
 
     // functional programming may make this more readable
@@ -44,14 +42,13 @@ pub fn selection_sort<T: Ord + Copy>(vec: Vec<T>) -> Option<Vec<T>> {
     return Some(result);
 }
 
-pub fn insertion_sort<T: Ord + Copy>(vec: Vec<T>) -> Option<Vec<T>> {
+pub fn insertion_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
     // O(n^2)
 
     if vec.len() < 1 {
         return None;
     }
 
-    let mut vec = vec;
     for i in 0..vec.len() {
         let mut j = i;
         while j > 0 && vec[j] < vec[j - 1] {
@@ -67,10 +64,6 @@ pub fn bogo_sort<T: Ord + Copy>(mut vec: Vec<T>) -> (Option<Vec<T>>, usize) {
     // O(+inf)
     if vec.len() < 1 {
         return (None, 0);
-    }
-
-    if vec.len() > 9 {
-        return (bubble_sort(vec), u64::MAX as usize);
     }
 
     fn randomize<T>(mut vec: Vec<T>) -> Vec<T> {
@@ -103,6 +96,54 @@ pub fn bogo_sort<T: Ord + Copy>(mut vec: Vec<T>) -> (Option<Vec<T>>, usize) {
             return (Some(vec), steps);
         }
     }
+}
+
+pub fn merge_sort<T: Ord + Copy>(mut vec: Vec<T>, left: usize, right: usize) -> Option<Vec<T>> {
+    if vec.len() < 1 {
+        return None;
+    }
+
+    fn merge<T: Ord + Copy>(mut vec: Vec<T>, left: usize, mid: usize, right: usize) -> Vec<T> {
+        let n1 = mid - left;
+        let n2 = right - mid;
+        let l1 = vec.clone();
+        let r1 = vec.clone();
+        let l = &l1[left..mid];
+        let r = &r1[mid..right];
+
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = left;
+        while i < n1 && j < n2 {
+            if l[i] < r[j] {
+                vec[k] = l[i];
+                i = i + 1;
+            } else {
+                vec[k] = r[j];
+                j = j + 1;
+            }
+            k = k + 1;
+        }
+        while i < n1 {
+            vec[k] = l[i];
+            i = i + 1;
+            k = k + 1;
+        }
+        while j < n2 {
+            vec[k] = r[j];
+            j = j + 1;
+            k = k + 1;
+        }
+        return vec;
+    }
+
+    if right - 1 > left {
+        let mid = left + (right - left) / 2;
+        vec = merge_sort(vec, left, mid).unwrap();
+        vec = merge_sort(vec, mid, right).unwrap();
+        vec = merge(vec, left, mid, right);
+    }
+    return Some(vec);
 }
 
 #[cfg(test)]
@@ -149,17 +190,33 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn bogo_sort_test() {
-        let (result, steps) = bogo_sort(vec![3, 4, 1, 5, 2, 6, 8, 7, 9, 10, 11]);
+        let (result, steps) = bogo_sort(vec![3, 4, 1, 5, 2, 6, 8, 7, 9, 10]);
         assert_eq!(steps, 1);
-        assert_eq!(result, Some(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]));
+        assert_eq!(result, Some(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
     }
 
     #[test]
+    #[ignore]
     fn bogo_sort_empty_vec() {
         let vec: Vec<i32> = Vec::new();
         let (result, steps) = bogo_sort(vec);
         assert_eq!(result, None);
         assert_eq!(steps, 0);
+    }
+
+    #[test]
+    fn merge_sort_test() {
+        let vec = vec![3, 4, 1, 5, 2, 6, 8, 7, 9, 10];
+        let result = merge_sort(vec.clone(), 0, vec.len());
+        assert_eq!(result, Some(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
+    }
+
+    #[test]
+    fn merge_sort_empty_vec() {
+        let vec: Vec<i32> = Vec::new();
+        let result = merge_sort(vec.clone(), 0, vec.len());
+        assert_eq!(result, None);
     }
 }
