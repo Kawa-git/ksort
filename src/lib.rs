@@ -98,10 +98,22 @@ pub fn bogo_sort<T: Ord + Copy>(mut vec: Vec<T>) -> (Option<Vec<T>>, usize) {
     }
 }
 
-pub fn merge_sort<T: Ord + Copy>(mut vec: Vec<T>, left: usize, right: usize) -> Option<Vec<T>> {
-    // θ(nlog(n)), stable
-    if vec.len() < 1 {
-        return None;
+pub fn merge_sort<T: Ord + Copy>(mut vec: Vec<T>) -> Option<Vec<T>> {
+    pub fn sort<T: Ord + Copy>(mut vec: Vec<T>, left: usize, right: usize) -> Option<Vec<T>> {
+        // θ(nlog(n)), stable
+        if vec.len() < 1 {
+            return None;
+        }
+
+        if right - 1 > left {
+            let mid = left + (right - left) / 2;
+            vec = sort(vec, left, mid).unwrap();
+            vec = sort(vec, mid, right).unwrap();
+            vec = merge(vec, left, mid, right);
+            return Some(vec);
+        } else {
+            Some(vec)
+        }
     }
 
     fn merge<T: Ord + Copy>(mut vec: Vec<T>, left: usize, mid: usize, right: usize) -> Vec<T> {
@@ -137,14 +149,8 @@ pub fn merge_sort<T: Ord + Copy>(mut vec: Vec<T>, left: usize, right: usize) -> 
         }
         return vec;
     }
-
-    if right - 1 > left {
-        let mid = left + (right - left) / 2;
-        vec = merge_sort(vec, left, mid).unwrap();
-        vec = merge_sort(vec, mid, right).unwrap();
-        vec = merge(vec, left, mid, right);
-    }
-    return Some(vec);
+    let n = vec.len();
+    return sort(vec, 0, n);
 }
 
 #[cfg(test)]
